@@ -24,9 +24,10 @@
   <script src="src/libs/require-jquery.js"></script>
   -->
   <script src="src/fooball.js"></script>
-
+<!--
   <button onclick='FOOBALL.game.paused=true' >Pause</button>
-  <button onclick='FOOBALL.paused=false' >Go</button>
+  <button onclick='FOOBALL.game.paused=false' >Go</button>
+  -->
   <div style='position:relative'>
 	<canvas id='isopitch' width='860' height='640' style='background-color:#559944; border: 1px solid blue; position:absolute; left: 0; top: 0; z-index: 1;'></canvas>
 	<canvas id='radar' width='150' height='200' style='border: 0px solid yellow; position: absolute; left: 750px; top: 10px; z-index:2;'></canvas>
@@ -45,7 +46,8 @@ FOOBALL.draw.drawPitch(FOOBALL.mainview);
 FOOBALL.draw.drawPlayers(FOOBALL.mainview);
 FOOBALL.draw.drawBall(FOOBALL.mainview);
 //scrollPitch(isoctx);
-
+FOOBALL.then = Date.now();
+setInterval(FOOBALL.main, 1);
 function scrollPitch(ctx) {
 	xoff= 68;
 	yoff=0;

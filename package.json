@@ -1,8 +1,13 @@
 {
   "name": "fooball",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "html5 football game",
   "main": "index.js",
+  "author": "Am Laher <fooball@laher.net.nz>",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/laher/ChordialJS.git"
+  },
   "dependencies": {
     "grunt-cli": "~0.1.9",
     "grunt": "~0.4.1",
@@ -22,6 +27,5 @@
     "football",
     "game"
   ],
-  "author": "Am Laher",
   "license": "BSD"
 }
