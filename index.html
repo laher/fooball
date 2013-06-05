@@ -36,18 +36,15 @@
 var ic = document.getElementById('isopitch');
 var rc = document.getElementById('radar');
 FOOBALL.init(ic, rc);
+FOOBALL.draw.drawAll();
 
-FOOBALL.draw.drawPitch(FOOBALL.radarview);
-FOOBALL.draw.drawPlayers(FOOBALL.radarview);
-FOOBALL.draw.drawBall(FOOBALL.radarview);
-
-FOOBALL.draw.isofy(FOOBALL.mainview.context);
-FOOBALL.draw.drawPitch(FOOBALL.mainview);
-FOOBALL.draw.drawPlayers(FOOBALL.mainview);
-FOOBALL.draw.drawBall(FOOBALL.mainview);
 //scrollPitch(isoctx);
 FOOBALL.then = Date.now();
 setInterval(FOOBALL.main, 1);
+
+
+
+
 function scrollPitch(ctx) {
 	xoff= 68;
 	yoff=0;

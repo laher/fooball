@@ -28,12 +28,8 @@ module.exports = function(grunt) {
       },
       dist: {
         src: '<%= concat.dist.dest %>',
-        dest: 'dist/ba-<%= pkg.name %>.min.js'
+        dest: 'dist/<%= pkg.name %>-<%= pkg.version %>.min.js'
       },
-      build: {
-        src: 'src/<%= pkg.name %>.js',
-        dest: 'build/<%= pkg.name %>.min.js'
-      }
     },
     jasmine: {
         pivotal: {

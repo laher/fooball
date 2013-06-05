@@ -2,10 +2,13 @@
 
 var FOOBALL = {
 	bg : { color : '#559944' },
+	lines : { color : 'white' },
 	game : {
 		paused : true,
 		ball : {
-			xy : [0.5,0.5]
+			pos : null, // xy : [0.5,0.5]
+			speed : null,
+			dynamics : null
 		},
 		team1 : {
 			name : 'Red Rackams',
@@ -34,7 +37,28 @@ var FOOBALL = {
 			{ pos : 'st', yoffs : [0.7,0.78] }
 		]
 	},
-	mainview : {
+	newView : function (elementid, scale, xoff, yoff) {
+		return {
+			elementid : elementid,
+			scale : scale,
+			xoff : xoff,
+			yoff : -50,
+			reset : function() {
+				this.context.setTransform(this.scale,0,0,this.scale,0,0);
+				this.context.strokeStyle= FOOBALL.lines.color;
+				this.context.fillStyle= FOOBALL.bg.color;
+			},
+			transformPoint : function(xy) {
+				return [	
+				this.xoff + (xy[0] * FOOBALL.measurements.pitch.width),
+				this.yoff + (xy[1] * FOOBALL.measurements.pitch.length)
+				];
+			}		
+		};
+	},
+	mainview : null 
+	/*
+		{
 		elementid : 'isopitch',
 		scale : 10,
 		xoff : 48,
@@ -43,9 +67,17 @@ var FOOBALL = {
 			this.context.setTransform(this.scale,0,0,this.scale,0,0);
 			this.context.strokeStyle='#FFFFFF';
 			this.context.fillStyle='#FFFFFF';
+		},
+		transformPoint : function(xy) {
+			return [	
+			this.xoff + (xy[0] * FOOBALL.measurements.pitch.width),
+			this.yoff + (xy[1] * FOOBALL.measurements.pitch.length)
+			];
 		}
-	},
-	radarview : {
+	}*/
+	,
+	radarview : null 
+	/*{
 		elementid : 'radar',
 		scale : 1.5,
 		xoff : 5,
@@ -55,7 +87,7 @@ var FOOBALL = {
 			this.context.strokeStyle='#FFFFFF';
 			this.context.fillStyle='#FFFFFF';
 		}
-	},
+	}*/,
 	behaviourTypes : {
 		ball : {
 			mass : 3,
@@ -122,16 +154,15 @@ FOOBALL.measurements = {
 
 FOOBALL.init = function(isocanvas, radarcanvas) {
 //set up contexts
-	//var isocanvas = document.getElementById('isopitch');
-	var isoctx = isocanvas.getContext('2d');
-	isoctx.lineWidth= 0.5;
-	FOOBALL.mainview.context = isoctx;
+	FOOBALL.mainview= this.newView('isopitch', 10, 48, -50);
+	FOOBALL.mainview.context = isocanvas.getContext('2d');
+	FOOBALL.mainview.context.lineWidth = 0.5;
 	FOOBALL.mainview.reset();
+	FOOBALL.draw.isofy(FOOBALL.mainview.context);
 
-	//var radarcanvas = document.getElementById('radar');
-	var radarctx = radarcanvas.getContext('2d');
-	radarctx.lineWidth= 0.3;
-	FOOBALL.radarview.context = radarctx;
+	FOOBALL.radarview= this.newView('isopitch', 1.5, 5, 5);
+	FOOBALL.radarview.context = radarcanvas.getContext('2d');
+	FOOBALL.radarview.context.lineWidth = 0.3;
 	FOOBALL.radarview.reset();
 
 //set up event listeners
@@ -148,8 +179,14 @@ FOOBALL.init = function(isocanvas, radarcanvas) {
 };
 
 FOOBALL.game.init = function () {
+	FOOBALL.game.ball.init();
 	FOOBALL.game.initTeam(FOOBALL.game.team1, true);
 	FOOBALL.game.initTeam(FOOBALL.game.team2, false);
+};
+
+FOOBALL.game.ball.init = function () {
+	FOOBALL.game.ball.posVector = FOOBALL.newVector(45, 0.705);
+	FOOBALL.game.ball.speedVector = FOOBALL.newVector(0, 0.5);
 };
 
 FOOBALL.game.initTeam = function(team, isUp) {
@@ -185,46 +222,126 @@ FOOBALL.main = function () {
 	FOOBALL.then = now;
 };
 
+FOOBALL.physics2d = {
+	distance : function(a, b) {
+  		return Math.sqrt( Math.pow(b[0]-a[0], 2) + Math.pow(b[1]-a[1], 2) );        
+	},
+	angle : function(a, b) {
+    		return this.normalizeAngle((Math.atan2(b[1]-a[1],b[0]-a[0])*180)/Math.PI);
+	},
+	distanceFrom0 : function(a) {
+		return distance([0,0], a);
+	},
+	angleFrom0 : function(a) {
+		return angle([0,0], a);
+	},
+	normalizeAngle : function(a) {
+    		return (a+360)%360;
+	},
+	angleIsForward : function(a, isUp) {
+    		var b = this.normalizeAngle(a);
+    		if (b<=90 || b>270) {
+    		        return isUp;
+    		} else {
+            		return !isUp;
+		}
+	}
+};
+
+FOOBALL.newVector = function(angle, magnitude) {
+	return {
+		angle : angle,
+		magnitude : magnitude,
+		getXy : function() {
+			return [
+				Math.cos(this.angle * Math.PI / 180) * this.magnitude,
+				Math.sin(this.angle * Math.PI / 180) * this.magnitude,
+				];
+		},
+		setXy : function(a) {
+			this.angle = FOOBALL.physics2d.angleFrom0(a);
+			this.magnitude = FOOBALL.physics2d.distanceFrom0(a);
+		},
+		add : function(v) {
+			var s1 = this.getXy();
+			var s2 = v.getXy();
+			var s3 = [s1[0]+s2[0], s1[1]+s2[1]];
+			return FOOBALL.newVector(FOOBALL.physics2d.angleFrom0(s3),
+					FOOBALL.physics2d.distanceFrom0(s3));
+		},
+		sub : function(v) {
+			var s1 = this.getXy();
+			var s2 = v.getXy();
+			var s3 = [s1[0]-s2[0], s1[1]-s2[1]];
+			return FOOBALL.newVector(FOOBALL.physics2d.angleFrom0(s3),
+					FOOBALL.physics2d.distanceFrom0(s3));
+		},
+		//TODO mul, rmul
+		copy : function() {
+			return FOOBALL.newVector(this.angle,
+						this.magnitude);
+		},
+		normalize : function() {
+			if (this.magnitude != 0) {
+				this.magnitude = 1;
+			}
+		}
+	};
+};
+
 FOOBALL.update = function(modifier) {
 	// Update game objects
 
 	//update current player
-	var hero = FOOBALL.game.team1.players[FOOBALL.game.team1.currentPlayer];
-	if (hero != null) {
-		if (FOOBALL.game.keysDown) {
+	var currentPlayer = FOOBALL.game.team1.players[FOOBALL.game.team1.currentPlayer];
+	if (currentPlayer != null) {
+		if (FOOBALL.game.keysDown) { 
+			//moving. Undraw before moving
 			//undraw current player
-			FOOBALL.mainview.context.strokeStyle = FOOBALL.bg.color;
-			FOOBALL.radarview.context.strokeStyle = FOOBALL.bg.color;
-			FOOBALL.draw.drawPlayer(FOOBALL.mainview, hero);
-			FOOBALL.draw.drawPlayer(FOOBALL.radarview, hero);
-			FOOBALL.mainview.context.strokeStyle = 'white';
-			FOOBALL.radarview.context.strokeStyle = 'white';
+			var xym= FOOBALL.mainview.transformPoint(currentPlayer.xy);
+			FOOBALL.draw.drawDisc(FOOBALL.mainview.context, [xym[0]-0.2, xym[1]-0.2], 0.9, FOOBALL.bg.color);
+			var xyr= FOOBALL.radarview.transformPoint(currentPlayer.xy);
+			FOOBALL.draw.drawDisc(FOOBALL.radarview.context, [xyr[0]-0.1, xyr[1]-0.1], 0.7, FOOBALL.bg.color);
+			//FOOBALL.radarview.context.strokeStyle = 'white';
 		}
+		//currentPlayer.angle = 0;
 		if (38 in FOOBALL.game.keysDown) { // Player holding up
-			hero.xy[1] -= hero.speed * modifier;
+			currentPlayer.xy[1] -= currentPlayer.speed * modifier;
 		}
 		if (40 in FOOBALL.game.keysDown) { // Player holding down
-			hero.xy[1] += hero.speed * modifier;
+			currentPlayer.xy[1] += currentPlayer.speed * modifier;
+			currentPlayer.angle = 0;
 		}
 		if (37 in FOOBALL.game.keysDown) { // Player holding left
-			hero.xy[0] -= hero.speed * modifier;
+			currentPlayer.xy[0] -= currentPlayer.speed * modifier;
 		}
 		if (39 in FOOBALL.game.keysDown) { // Player holding right
-			hero.xy[0] += hero.speed * modifier;
+			currentPlayer.xy[0] += currentPlayer.speed * modifier;
 		}
 	}
 
 	//update ball
+	if(FOOBALL.game.ball.speed > 0) {
+		//FOOBALL.
+	}
+
+	//TODO update AI players
 
 
-	//update AI players
+	//TODO collision detection
+	//console.log(FOOBALL.game.ball.posVector.getXy());	
+	var dist= FOOBALL.physics2d.distance(currentPlayer.xy, FOOBALL.game.ball.posVector.getXy());
+	if(dist < 0.02) {
+		//console.log("HIT "+dist);
+		FOOBALL.game.ball.speedVector = currentPlayer.speedVector;
+	}
 /*
 	// Are they touching?
 	if (
-		hero.x <= (monster.x + 32)
-		&& monster.x <= (hero.x + 32)
-		&& hero.y <= (monster.y + 32)
-		&& monster.y <= (hero.y + 32)
+		currentPlayer.x <= (monster.x + 32)
+		&& monster.x <= (currentPlayer.x + 32)
+		&& currentPlayer.y <= (monster.y + 32)
+		&& monster.y <= (currentPlayer.y + 32)
 	) {
 		++monstersCaught;
 		reset();
@@ -282,31 +399,51 @@ FOOBALL.draw = {
 
 	},
 	drawBall : function(view) {
-		var ctx= view.context;
+		//var ctx= view.context;
 		//basepoint
-		var orig= ctx.strokeStyle;
-		ctx.strokeStyle = 'yellow';
-		var xy = FOOBALL.game.ball.xy;
-		//var xy = this.calcBasepoint(view.xoff, view.yoff, false, 0.5, 0, 1);
-		ctx.beginPath();
-		ctx.arc(
-				view.xoff + (xy[0] * FOOBALL.measurements.pitch.width),
-				view.yoff + (xy[1] * FOOBALL.measurements.pitch.length),
-				0.5,
-				0,
-				Math.PI * 2,
-				false);
-		ctx.stroke();
-		ctx.strokeStyle= orig;
+		//var orig= ctx.strokeStyle;
+		//ctx.strokeStyle = 'yellow';
+		var xy = FOOBALL.game.ball.posVector.getXy();
+		xy= view.transformPoint(xy);
+		FOOBALL.draw.drawDisc(
+			view.context,
+			xy,
+			0.5,
+			'yellow'
+			);
+		//ctx.strokeStyle= orig;
 	},
-	drawPlayer : function(view, player, isUp) {
+	drawPlayer : function(view, player, isUp, colour) {
 		//console.log(player.xy);
 		var ctx = view.context;
+		var xy= view.transformPoint(player.xy);
+		FOOBALL.draw.drawDisc(
+			ctx,
+			xy,
+			0.6,
+			colour
+			);
+	},
+	drawDisc : function(ctx, xy, radius, colour) {
+		var orig= ctx.fillStyle;
+		ctx.fillStyle= colour;
 		ctx.beginPath();
 		ctx.arc(
-			view.xoff + (player.xy[0] * FOOBALL.measurements.pitch.width),
-			view.yoff + (player.xy[1] * FOOBALL.measurements.pitch.length),
-			0.5,
+			xy[0],
+			xy[1],
+			radius,
+			0,
+			Math.PI * 2,
+			false);
+		ctx.fill();
+		ctx.fillStyle= orig;
+	},
+	drawRing : function(ctx, x, y, radius) {
+		ctx.beginPath();
+		ctx.arc(
+			x,
+			y,
+			radius,
 			0,
 			Math.PI * 2,
 			false);
@@ -327,11 +464,11 @@ FOOBALL.draw = {
 		var orig= view.context.strokeStyle;
 		view.context.strokeStyle = FOOBALL.game.team1.color;
 		for(var i=0; i<FOOBALL.game.team1.players.length; i++) {
-			this.drawPlayer(view, FOOBALL.game.team1.players[i], true);
+			this.drawPlayer(view, FOOBALL.game.team1.players[i], true, FOOBALL.game.team1.color);
 		}
 		view.context.strokeStyle = FOOBALL.game.team2.color;
 		for(var j=0; j<FOOBALL.game.team2.players.length; j++) {
-			this.drawPlayer(view, FOOBALL.game.team2.players[j], false);
+			this.drawPlayer(view, FOOBALL.game.team2.players[j], false, FOOBALL.game.team2.color);
 		}
 		view.context.strokeStyle= orig;
 	},
