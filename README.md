@@ -28,6 +28,7 @@ To lint, test & build, you need 'grunt'.
 TODO
 ----
 Lots of stuff to get an actual game going:
+
  * AI - closest player follows ball. Some randomness (to clear players).
  * collision detection & bouncing.
  * zoom & panning
