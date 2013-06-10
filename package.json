@@ -1,6 +1,6 @@
 {
   "name": "fooball",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "html5 football game",
   "main": "index.js",
   "author": "Am Laher <fooball@laher.net.nz>",

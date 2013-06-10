@@ -8,7 +8,13 @@
   <!--
   <script src="src/libs/modernizr-2.5.3.min.js"></script>
   -->
-  <style type="text/css">body {-webkit-tap-highlight-color: rgba(0,0,0,0);  margin: 0;}</style>
+  <style type="text/css">body {-webkit-tap-highlight-color: rgba(0,0,0,0);  margin: 0;}
+#notifications {
+	width:300px;
+	height:500px;
+	overflow:scroll;
+}
+</style>
 </head>
 <body>
 	<!--
@@ -23,11 +29,15 @@
   <script src="src/libs/backbone-0.9.2.min.js"></script>
   <script src="src/libs/require-jquery.js"></script>
   -->
-  <script src="src/fooball.js"></script>
+  <script src="src/fooball-core.js"></script>
+  <script src="src/fooball-physics.js"></script>
+  <script src="src/fooball-game.js"></script>
+  <script src="src/fooball-render.js"></script>
 <!--
   <button onclick='FOOBALL.game.paused=true' >Pause</button>
   <button onclick='FOOBALL.game.paused=false' >Go</button>
   -->
+  <div style='float:right;border:1px solid green'><h3>notifications</h3><div id='notifications'></div></div>
   <div style='position:relative'>
 	<canvas id='isopitch' width='860' height='640' style='background-color:#559944; border: 1px solid blue; position:absolute; left: 0; top: 0; z-index: 1;'></canvas>
 	<canvas id='radar' width='150' height='200' style='border: 0px solid yellow; position: absolute; left: 750px; top: 10px; z-index:2;'></canvas>
