@@ -45,20 +45,13 @@ FOOBALL.game.initTeam = function(team, isUp) {
 		var row= formation[i];
 		//console.log(row);
 		for(var j=0; j<row.yoffs.length; j++) {
-			//console.log(row.yoffs[j]);
 			var xy = FOOBALL.draw.calcStartpoint(isUp, row.yoffs[j], j, row.yoffs.length);
-			team.players[playernum]= {
-				base : { xindex : j, xcount : row.yoffs.length, yoffs : row.yoffs[j] },
-				posVector : FOOBALL.physics2d.newVector(xy[0],xy[1]),
-				speedVector : FOOBALL.physics2d.newVector(0,0),
-				positionName : row.pos
-			//	xy : [0,0],
-				//speed : 1
-
-			};
-			//FOOBALL.console.log(xy);
+			team.players[playernum]= Object.create(FOOBALL.Player.prototype);
+			team.players[playernum].base = { xindex : j, xcount : row.yoffs.length, yoffs : row.yoffs[j] };
+			team.players[playernum].positionName = row.pos;
+			team.players[playernum].posVector= FOOBALL.physics2d.newVector(0,0);
 			team.players[playernum].posVector.setXy(xy);
-			//console.log(team.players[playernum]);
+			team.players[playernum].speedVector= FOOBALL.physics2d.newVector(0,0);
 			playernum++;
 		}
 	}

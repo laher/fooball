@@ -18,28 +18,29 @@ var FOOBALL = {
 			elementid : elementid,
 			scale : scale,
 			xoff : xoff,
-			yoff : -50,
+			yoff : yoff,
 			reset : function() {
 				this.context.setTransform(this.scale,0,0,this.scale,0,0);
 				this.context.strokeStyle= FOOBALL.lines.color;
 				this.context.fillStyle= FOOBALL.bg.color;
 			},
 			transformPoint : function(xy) {
-				return [	
+				return [
 				this.xoff + (xy[0] * FOOBALL.measurements.pitch.width),
 				this.yoff + (xy[1] * FOOBALL.measurements.pitch.length)
 				];
-			}		
+			}
 		};
 	},
 	mainview : null,
-	radarview : null, 
+	radarview : null,
 	behaviourTypes : {
 		ball : {
 			mass : 3,
 			maxAcceleration : 0,
 			maxSpeed : 1.1,
-			friction : 0.0006
+			//friction : 0.0006
+			friction : 0.9
 		},
 		human : {
 			mass : 12,
@@ -110,13 +111,13 @@ FOOBALL.measurements = {
 
 FOOBALL.init = function(isocanvas, radarcanvas) {
 //set up contexts
-	FOOBALL.mainview= this.newView('isopitch', 10, 48, -50);
+	FOOBALL.mainview= this.newView('isopitch', 7, 77, -30);
 	FOOBALL.mainview.context = isocanvas.getContext('2d');
 	FOOBALL.mainview.context.lineWidth = 0.5;
 	FOOBALL.mainview.reset();
 	FOOBALL.draw.isofy(FOOBALL.mainview.context);
 
-	FOOBALL.radarview= this.newView('isopitch', 1.5, 5, 5);
+	FOOBALL.radarview= this.newView('radarpitch', 1.5, 5, 5);
 	FOOBALL.radarview.context = radarcanvas.getContext('2d');
 	FOOBALL.radarview.context.lineWidth = 0.3;
 	FOOBALL.radarview.reset();
@@ -151,13 +152,15 @@ FOOBALL.update = function(modifier) {
 	var currentPlayer = FOOBALL.game.team1.players[FOOBALL.game.team1.currentPlayer];
 	if (currentPlayer != null) {
 		var posXy= currentPlayer.posVector.getXy();
-		if (FOOBALL.game.keysDown) { 
+		if (FOOBALL.game.keysDown) {
 			//moving. Undraw before moving
 			//undraw current player - TODO should be 'clear'
-			var xym= FOOBALL.mainview.transformPoint(posXy);
-			FOOBALL.draw.drawDisc(FOOBALL.mainview.context, [xym[0]-0.2, xym[1]-0.2], 0.9, FOOBALL.bg.color);
-			var xyr= FOOBALL.radarview.transformPoint(posXy);
-			FOOBALL.draw.drawDisc(FOOBALL.radarview.context, [xyr[0]-0.1, xyr[1]-0.1], 0.7, FOOBALL.bg.color);
+			currentPlayer.clear(FOOBALL.mainview);
+			currentPlayer.clear(FOOBALL.radarview);
+			//var xym= FOOBALL.mainview.transformPoint(posXy);
+			//FOOBALL.draw.drawDisc(FOOBALL.mainview.context, [xym[0]-0.2, xym[1]-0.2], 0.9, FOOBALL.bg.color);
+			//var xyr= FOOBALL.radarview.transformPoint(posXy);
+			//FOOBALL.draw.drawDisc(FOOBALL.radarview.context, [xyr[0]-0.1, xyr[1]-0.1], 0.7, FOOBALL.bg.color);
 			//FOOBALL.radarview.context.strokeStyle = 'white';
 		//currentPlayer.angle = 0;
 			var angleCalced=false;
@@ -214,32 +217,32 @@ FOOBALL.update = function(modifier) {
 		var spv = FOOBALL.game.ball.speedVector;
 
 		//update
-		FOOBALL.game.ball.posVector = FOOBALL.game.ball.posVector.add( spv.mul(modifier) );
+		FOOBALL.game.ball.posVector.add( FOOBALL.physics2d.mul(spv, modifier) );
+		//account for friction and collisions with rocks
+		if(!FOOBALL.game.ball.posVector.inside([0,0],[1,1])) {
+			//TODO only if pointing away from midpoint
+			var angle = FOOBALL.physics2d.angle(bposXy,[0.5,0.5])
+				       - FOOBALL.game.ball.speedVector.angle;
+			if(angle > 90 || angle < -90) {
+				FOOBALL.game.ball.speedVector.bounce();
+			}
+
+		} else {
+			FOOBALL.game.ball.speedVector.mul(FOOBALL.behaviourTypes.ball.friction);
+		}
+
 	}
 
 	//TODO update AI players
 
 
 	//TODO collision detection
-	//console.log(FOOBALL.game.ball.posVector.getXy());	
 	var dist= FOOBALL.physics2d.distance(currentPlayer.posVector.getXy(), FOOBALL.game.ball.posVector.getXy());
 	if(dist < 0.02) {
 		FOOBALL.console.log("HIT "+dist+" "+FOOBALL.game.ball.speedVector.angle);
-		FOOBALL.game.ball.speedVector = currentPlayer.speedVector;
-		
+		FOOBALL.game.ball.speedVector.copy(currentPlayer.speedVector);
 	}
-/*
-	// Are they touching?
-	if (
-		currentPlayer.x <= (monster.x + 32)
-		&& monster.x <= (currentPlayer.x + 32)
-		&& currentPlayer.y <= (monster.y + 32)
-		&& monster.y <= (currentPlayer.y + 32)
-	) {
-		++monstersCaught;
-		reset();
-	}
-	*/
+
 };
 
 
