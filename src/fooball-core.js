@@ -89,6 +89,7 @@ FOOBALL.measurements = {
 	goal : {
 		width: 7.3,
 		height : 2,
+		length : 2
 	},
 	sixyard : {
 		width : 18.3,
@@ -113,7 +114,7 @@ FOOBALL.init = function(isocanvas, radarcanvas) {
 //set up contexts
 	FOOBALL.mainview= this.newView('isopitch', 7, 77, -30);
 	FOOBALL.mainview.context = isocanvas.getContext('2d');
-	FOOBALL.mainview.context.lineWidth = 0.5;
+	FOOBALL.mainview.context.lineWidth = 0.3;
 	FOOBALL.mainview.reset();
 	FOOBALL.draw.isofy(FOOBALL.mainview.context);
 
@@ -209,13 +210,17 @@ FOOBALL.update = function(modifier) {
 	//update ball
 	if(FOOBALL.game.ball.speedVector.magnitude > 0) {
 		//unblit
+		FOOBALL.game.ball.clear(FOOBALL.mainview);
+		FOOBALL.game.ball.clear(FOOBALL.radarview);
 		var bposXy = FOOBALL.game.ball.posVector.getXy();
+		/*
 		var bxym= FOOBALL.mainview.transformPoint(bposXy);
 		FOOBALL.draw.drawDisc(FOOBALL.mainview.context, [bxym[0]-0.2, bxym[1]-0.2], 0.9, FOOBALL.bg.color);
 		var bxyr= FOOBALL.radarview.transformPoint(bposXy);
 		FOOBALL.draw.drawDisc(FOOBALL.radarview.context, [bxyr[0]-0.1, bxyr[1]-0.1], 0.7, FOOBALL.bg.color);
-		var spv = FOOBALL.game.ball.speedVector;
+		*/
 
+		var spv = FOOBALL.game.ball.speedVector;
 		//update
 		FOOBALL.game.ball.posVector.add( FOOBALL.physics2d.mul(spv, modifier) );
 		//account for friction and collisions with rocks
@@ -238,7 +243,7 @@ FOOBALL.update = function(modifier) {
 
 	//TODO collision detection
 	var dist= FOOBALL.physics2d.distance(currentPlayer.posVector.getXy(), FOOBALL.game.ball.posVector.getXy());
-	if(dist < 0.02) {
+	if(dist < 0.03) {
 		FOOBALL.console.log("HIT "+dist+" "+FOOBALL.game.ball.speedVector.angle);
 		FOOBALL.game.ball.speedVector.copy(currentPlayer.speedVector);
 	}

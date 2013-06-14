@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="744.09448819"
+   height="1052.3622047"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48.3.1 r9886"
+   sodipodi:docname="New document 1">
+  <defs
+     id="defs4">
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient3792">
+      <stop
+         style="stop-color:#d89c48;stop-opacity:1;"
+         offset="0"
+         id="stop3794" />
+      <stop
+         style="stop-color:#d89c48;stop-opacity:0;"
+         offset="1"
+         id="stop3796" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient3758">
+      <stop
+         style="stop-color:#ffffff;stop-opacity:1;"
+         offset="0"
+         id="stop3760" />
+      <stop
+         style="stop-color:#ffffff;stop-opacity:0;"
+         offset="1"
+         id="stop3762" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3758"
+       id="linearGradient3764"
+       x1="423.75443"
+       y1="110.23654"
+       x2="424.8288"
+       y2="221.76839"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(1.3760542,0,0,1.1258955,-255.91637,44.887576)" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3792"
+       id="linearGradient3798"
+       x1="330"
+       y1="419.50504"
+       x2="317.14288"
+       y2="263.79077"
+       gradientUnits="userSpaceOnUse" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.7"
+     inkscape:cx="309.10321"
+     inkscape:cy="750.18447"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     showguides="true"
+     inkscape:guide-bbox="true"
+     inkscape:window-width="708"
+     inkscape:window-height="682"
+     inkscape:window-x="566"
+     inkscape:window-y="67"
+     inkscape:window-maximized="0">
+    <sodipodi:guide
+       orientation="0,1"
+       position="154.28571,631.42857"
+       id="guide3802" />
+    <sodipodi:guide
+       orientation="1,0"
+       position="198.57143,955.71429"
+       id="guide3804" />
+    <sodipodi:guide
+       orientation="0,1"
+       position="241.42857,885.71429"
+       id="guide3806" />
+    <sodipodi:guide
+       orientation="1,0"
+       position="452.85714,782.85714"
+       id="guide3808" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       sodipodi:type="arc"
+       style="fill:#ff9500;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       id="path2985"
+       sodipodi:cx="320"
+       sodipodi:cy="282.36218"
+       sodipodi:rx="122.85714"
+       sodipodi:ry="115.71429"
+       d="m 442.85714,282.36218 a 122.85714,115.71429 0 1 1 -245.71428,0 122.85714,115.71429 0 1 1 245.71428,0 z"
+       transform="matrix(1.0348837,0,0,1.0987655,-5.4485036,-16.459058)"
+       inkscape:export-filename="/home/am/d/js/fooball/img/ball1.png"
+       inkscape:export-xdpi="5.6405802"
+       inkscape:export-ydpi="5.6405802" />
+    <path
+       style="fill:url(#linearGradient3764);fill-opacity:1"
+       d="m 414.4186,234.92834 c 0,35.97644 -37.08843,43.16579 -86.48672,43.16579 -49.39829,0 -92.40033,-7.18935 -92.40033,-43.16579 0,-35.97642 40.04522,-65.14111 89.44353,-65.14111 49.39828,0 89.44352,29.16469 89.44352,65.14111 z"
+       id="path3755"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="sssss"
+       inkscape:export-filename="/home/am/d/js/fooball/img/ball1.png"
+       inkscape:export-xdpi="5.6405802"
+       inkscape:export-ydpi="5.6405802" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="Layer"
+     style="display:none">
+    <path
+       transform="translate(-1.4285744,-5.812276e-7)"
+       sodipodi:type="arc"
+       style="fill:url(#linearGradient3798);fill-opacity:1;fill-rule:evenodd"
+       id="path2985-4"
+       sodipodi:cx="320"
+       sodipodi:cy="282.36218"
+       sodipodi:rx="122.85714"
+       sodipodi:ry="115.71429"
+       d="m 442.85714,282.36218 a 122.85714,115.71429 0 1 1 -245.71428,0 122.85714,115.71429 0 1 1 245.71428,0 z" />
+  </g>
+</svg>

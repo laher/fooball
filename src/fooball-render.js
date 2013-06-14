@@ -47,11 +47,8 @@ FOOBALL.draw = {
 		ctx.stroke();
 
 	},
+	/*
 	drawBall : function(view) {
-		//var ctx= view.context;
-		//basepoint
-		//var orig= ctx.strokeStyle;
-		//ctx.strokeStyle = 'yellow';
 		var xy = FOOBALL.game.ball.posVector.getXy();
 		xy= view.transformPoint(xy);
 		FOOBALL.draw.drawDisc(
@@ -60,23 +57,23 @@ FOOBALL.draw = {
 			0.5,
 			'yellow'
 			);
-		//ctx.strokeStyle= orig;
 	},
 	drawPlayer : function(view, player, isUp, colour) {
 		//console.log(player.xy);
 		var ctx = view.context;
 		var xy= view.transformPoint(player.posVector.getXy());
-		//FOOBALL.console.log(player.posVector.getXy() + ' ' + xy);
 		FOOBALL.draw.drawDisc(
 			ctx,
 			xy,
 			0.6,
 			colour
 			);
-	},
-	drawDisc : function(ctx, xy, radius, colour) {
-		var orig= ctx.fillStyle;
-		ctx.fillStyle= colour;
+	},*/
+	drawDisc : function(ctx, xy, radius, color, shadowcolor) {
+		shadowcolor = shadowcolor || '#999';
+		//var orig= ctx.fillStyle;
+		ctx.save();
+		ctx.fillStyle= color;
 		ctx.beginPath();
 		ctx.arc(
 			xy[0],
@@ -85,8 +82,14 @@ FOOBALL.draw = {
 			0,
 			Math.PI * 2,
 			false);
+		ctx.shadowColor = shadowcolor;
+		ctx.shadowBlur = 1;
+		ctx.shadowOffsetX = 1;
+		ctx.shadowOffsetY = 1;
 		ctx.fill();
-		ctx.fillStyle= orig;
+		//ctx.fillStyle= orig;
+		ctx.restore();
+
 	},
 	drawRing : function(ctx, x, y, radius) {
 		ctx.beginPath();
@@ -100,20 +103,20 @@ FOOBALL.draw = {
 		ctx.stroke();
 	},
 	drawPlayers : function(view) {
-		//var formation = FOOBALL.formations.FourFourTwo;
 		var orig= view.context.strokeStyle;
 		view.context.strokeStyle = FOOBALL.game.team1.color;
 		for(var i=0; i<FOOBALL.game.team1.players.length; i++) {
-			this.drawPlayer(view, FOOBALL.game.team1.players[i], true, FOOBALL.game.team1.color);
+			FOOBALL.game.team1.players[i].draw(view);
+			//this.drawPlayer(view, FOOBALL.game.team1.players[i], true, FOOBALL.game.team1.color);
 		}
 		view.context.strokeStyle = FOOBALL.game.team2.color;
 		for(var j=0; j<FOOBALL.game.team2.players.length; j++) {
-			this.drawPlayer(view, FOOBALL.game.team2.players[j], false, FOOBALL.game.team2.color);
+			FOOBALL.game.team2.players[j].draw(view);
+			//this.drawPlayer(view, FOOBALL.game.team2.players[j], false, FOOBALL.game.team2.color);
 		}
 		view.context.strokeStyle= orig;
 	},
 	drawPitch : function (view) {
-		//isofy(ctx);
 		var ctx = view.context;
 		var xoff= view.xoff;
 		var yoff= view.yoff;
@@ -136,6 +139,13 @@ FOOBALL.draw = {
 			FOOBALL.measurements.sixyard.width,
 			FOOBALL.measurements.sixyard.length);
 
+		//goal
+		ctx.strokeRect(
+			xoff + FOOBALL.measurements.pitch.width/2 - FOOBALL.measurements.goal.width/2,
+			yoff - FOOBALL.measurements.goal.length,
+			FOOBALL.measurements.goal.width,
+			FOOBALL.measurements.goal.length);
+
 		//penalty spot
 		ctx.beginPath();
 		ctx.arc(
@@ -144,7 +154,6 @@ FOOBALL.draw = {
 				0.2,
 				2 * Math.PI,
 				false);
-		ctx.fill();
 		ctx.stroke();
 
 		//penalty arc
@@ -187,6 +196,12 @@ FOOBALL.draw = {
 			yoff + FOOBALL.measurements.pitch.length - FOOBALL.measurements.sixyard.length,
 			FOOBALL.measurements.sixyard.width,
 			FOOBALL.measurements.sixyard.length);
+		//goal
+		ctx.strokeRect(
+			xoff + FOOBALL.measurements.pitch.width/2 - FOOBALL.measurements.goal.width/2,
+			yoff + FOOBALL.measurements.pitch.length,
+			FOOBALL.measurements.goal.width,
+			FOOBALL.measurements.goal.length);
 
 		//penalty spot2
 		ctx.beginPath();
@@ -196,9 +211,7 @@ FOOBALL.draw = {
 				0.2,
 				2 * Math.PI,
 				false);
-		ctx.fill();
 		ctx.stroke();
-		this.dot(ctx, xoff+10, yoff+5);
 
 		//penalty arc
 		ctx.beginPath();
@@ -210,9 +223,6 @@ FOOBALL.draw = {
 				- (Math.PI / 5),
 				false);
 		ctx.stroke();
-		this.dot(ctx, xoff+5, yoff+5);
-		//doUprights(ctx);
-		//reset(ctx);
 	////ctx.transform(1/scalex, -skewx, -skewy, 1/scaley, -movex, -movey);
 		//ctx.rotate( Math.PI / 4 );
 	//	ctx.translate( 0, FOOBALL.measurements.pitch.length );
@@ -258,15 +268,9 @@ FOOBALL.draw = {
 		var movey= 0;
 		var scalex=2;
 		var scaley=1;
-		//unisofy(ctx);
-	//	ctx.translate(
-		//	xoff + FOOBALL.measurements.pitch.width/2 - FOOBALL.measurements.goal.width,
-			//yoff - FOOBALL.measurements.goal.height);
-		//ctx.rotate( - Math.PI / 4 );
 		ctx.transform(scalex, skewx, skewy, scaley, movex, movey);
 		ctx.strokeStyle='#990000';
 		this.dot(ctx, xoff+1, yoff+1);
-	//	dot(ctx, xoff+5, yoff+5);
 
 		this.dot(ctx, xoff+10, yoff+10);
 		ctx.strokeRect(xoff - (FOOBALL.measurements.pitch.width/4) - (FOOBALL.measurements.goal.width/3),
@@ -285,12 +289,10 @@ FOOBALL.draw = {
 	drawAll : function() {
 		FOOBALL.draw.drawPitch(FOOBALL.radarview);
 		FOOBALL.draw.drawPlayers(FOOBALL.radarview);
-		FOOBALL.draw.drawBall(FOOBALL.radarview);
-
-	//	FOOBALL.draw.isofy(FOOBALL.mainview.context);
+		FOOBALL.game.ball.draw(FOOBALL.radarview);
 		FOOBALL.draw.drawPitch(FOOBALL.mainview);
 		FOOBALL.draw.drawPlayers(FOOBALL.mainview);
-		FOOBALL.draw.drawBall(FOOBALL.mainview);
+		FOOBALL.game.ball.draw(FOOBALL.mainview);
 	}
 };
 
