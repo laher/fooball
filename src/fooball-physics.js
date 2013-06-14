@@ -24,15 +24,7 @@ FOOBALL.physics2d = {
 		} else {
 			return !isUp;
 		}
-	}/*,
-
-	newVector : function(angle, magnitude) {
-		return {
-			angle : angle,
-			magnitude : magnitude,
-		};
-	}*/
-	,
+	},
 	add : function(v1, v2) {
 		var s1 = v1.getXy();
 		var s2 = v2.getXy();

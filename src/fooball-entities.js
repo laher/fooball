@@ -2,21 +2,23 @@
 var FOOBALL = FOOBALL || {};
 
 FOOBALL.entities= {
-	Ball : {},
-	Player : {}
+	Entity : {
+		clear : function(view) {
+			if(this.lastPos == null) {
+				this.lastPos= this.posVector.getXy();
+			}
+			var xy= view.transformPoint(this.lastPos);
+			view.context.clearRect(xy[0]-1,xy[1]-1,2,2);
+		}
+	}
 };
-FOOBALL.entities.Ball.prototype = {
-	posVector : null,
+
+FOOBALL.entities.Ball = {
 	lastPos : null,
-	speedVector : null,
+	//posVector : FOOBALL.physics2d.newVector(45, 0.705),
+	//speedVector : FOOBALL.physics2d.newVector(0, 0),
 	mainColor : 'orange',
-	clear : function(view) {
-		if(this.lastPos == null) {
-			this.lastPos= this.posVector.getXy();
-		};
-		var xym= view.transformPoint(this.lastPos);
-		FOOBALL.draw.drawDisc(view.context, [xym[0]-0.2, xym[1]-0.2], 0.9, FOOBALL.bg.color, FOOBALL.bg.color);
-	},
+	clear : FOOBALL.entities.Entity.clear,
 	draw : function(view) {
 		var xy = this.posVector.getXy();
 		xy= view.transformPoint(xy);
@@ -25,7 +27,7 @@ FOOBALL.entities.Ball.prototype = {
 			xy,
 			0.5,
 			this.mainColor
-			);
+		);
 	},
 	move : function(modifier) {
 		if(this.speedVector.magnitude > 0) {
@@ -33,7 +35,7 @@ FOOBALL.entities.Ball.prototype = {
 			//update
 			this.posVector.add( FOOBALL.physics2d.mul(this.speedVector, modifier) );
 			//account for friction and collisions with rocks
-			if(!FOOBALL.game.ball.posVector.inside([0,0],[1,1])) {
+			if(!this.posVector.inside([0,0],[1,1])) {
 				//TODO only if pointing away from midpoint
 				var angle = FOOBALL.physics2d.angle(this.posVector.getXy(),[0.5,0.5])    - this.speedVector.angle;
 				if(angle > 90 || angle < -90) {
@@ -49,7 +51,8 @@ FOOBALL.entities.Ball.prototype = {
 		}
 	}
 };
-FOOBALL.entities.Player.prototype = {
+
+FOOBALL.entities.Player = {
 	base : { xindex : 0, xcount : 0, yoffs : 0 },
 	posVector : null,
 	lastPos : null,
@@ -58,14 +61,7 @@ FOOBALL.entities.Player.prototype = {
 	mainColor : 'blue',
 	active : false,
 	human : false,
-	clear : function(view) {
-		if(this.lastPos == null) {
-			this.lastPos= this.posVector.getXy();
-		};
-		var xy= view.transformPoint(this.lastPos);
-		view.context.clearRect(xy[0]-1,xy[1]-1,2,2);
-		//FOOBALL.draw.drawDisc(view.context, [xym[0]-0.2, xym[1]-0.2], 0.9, FOOBALL.bg.color, FOOBALL.bg.color);
-	},
+	clear : FOOBALL.entities.Entity.clear,
 	draw : function(view) {
 		var xy= view.transformPoint(this.posVector.getXy());
 		FOOBALL.draw.drawDisc(
@@ -144,8 +140,17 @@ FOOBALL.entities.Player.prototype = {
 				this.speedVector.magnitude= 0;
 			}
 		}
-
 		this.posVector.add( FOOBALL.physics2d.mul(this.speedVector, modifier) );
+		//limits!
+		if(!this.posVector.inside([0,0],[1,1])) {
+			var xy= this.posVector.getXy();
+			if(xy[0]>1) { xy[0]=1; }
+			if(xy[1]>1) { xy[1]=1; }
+			if(xy[0]<0) { xy[0]=0; }
+			if(xy[1]<0) { xy[1]=0; }
+			this.posVector.setXy(xy);
+		}
+
 		// collision detection
 		var dist= FOOBALL.physics2d.distance(this.posVector.getXy(), FOOBALL.game.ball.posVector.getXy());
 		if(dist < 0.02) {
