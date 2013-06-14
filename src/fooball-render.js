@@ -82,10 +82,12 @@ FOOBALL.draw = {
 			0,
 			Math.PI * 2,
 			false);
+		/*
 		ctx.shadowColor = shadowcolor;
 		ctx.shadowBlur = 1;
 		ctx.shadowOffsetX = 1;
 		ctx.shadowOffsetY = 1;
+		*/
 		ctx.fill();
 		//ctx.fillStyle= orig;
 		ctx.restore();

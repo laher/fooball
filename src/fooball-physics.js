@@ -94,7 +94,10 @@ FOOBALL.physics2d.Vector.prototype = {
 	bounce : function() {
 		this.angle = FOOBALL.physics2d.normalizeAngle(this.angle+180);
 	},
-	copy : function(v) {
+	copy : function() {
+		return FOOBALL.physics2d.newVector(this.angle,this.magnitude);
+	},
+	become : function(v) {
 		this.angle= v.angle;
 		this.magnitude= v.magnitude;
 	},

@@ -68,6 +68,7 @@ var FOOBALL = {
 			friction : 0.0008
 		}
 	},
+	//probably ditch this ...
 	console : {
 		log : function(arg) {
 			var br = document.createElement('br');
@@ -135,120 +136,15 @@ FOOBALL.init = function(isocanvas, radarcanvas) {
 //set up game entities
 	FOOBALL.game.init();
 };
+
 FOOBALL.main = function () {
 	var now = Date.now();
 	var delta = now - FOOBALL.then;
 
-	FOOBALL.update(delta / 1000);
+	FOOBALL.game.update(delta / 1000);
 	FOOBALL.draw.drawAll();
 
 	FOOBALL.then = now;
 };
-
-
-FOOBALL.update = function(modifier) {
-	// Update game objects
-
-	//update current player
-	var currentPlayer = FOOBALL.game.team1.players[FOOBALL.game.team1.currentPlayer];
-	if (currentPlayer != null) {
-		var posXy= currentPlayer.posVector.getXy();
-		if (FOOBALL.game.keysDown) {
-			//moving. Undraw before moving
-			//undraw current player - TODO should be 'clear'
-			currentPlayer.clear(FOOBALL.mainview);
-			currentPlayer.clear(FOOBALL.radarview);
-			//var xym= FOOBALL.mainview.transformPoint(posXy);
-			//FOOBALL.draw.drawDisc(FOOBALL.mainview.context, [xym[0]-0.2, xym[1]-0.2], 0.9, FOOBALL.bg.color);
-			//var xyr= FOOBALL.radarview.transformPoint(posXy);
-			//FOOBALL.draw.drawDisc(FOOBALL.radarview.context, [xyr[0]-0.1, xyr[1]-0.1], 0.7, FOOBALL.bg.color);
-			//FOOBALL.radarview.context.strokeStyle = 'white';
-		//currentPlayer.angle = 0;
-			var angleCalced=false;
-			if (FOOBALL.keyCodes.UP in FOOBALL.game.keysDown) { // Player holding up
-				posXy[1] -= currentPlayer.speedVector.magnitude * modifier;
-				currentPlayer.speedVector.angle = 270;
-				if(FOOBALL.keyCodes.LEFT in FOOBALL.game.keysDown) {
-					currentPlayer.speedVector.angle -= 45;
-				} else if(FOOBALL.keyCodes.RIGHT in FOOBALL.game.keysDown) {
-					currentPlayer.speedVector.angle += 45;
-				}
-				angleCalced=true;
-			}
-			if (FOOBALL.keyCodes.DOWN in FOOBALL.game.keysDown) { // Player holding down
-				posXy[1] += currentPlayer.speedVector.magnitude * modifier;
-				currentPlayer.angle = 0;
-				currentPlayer.speedVector.angle = 90;
-				if(FOOBALL.keyCodes.LEFT in FOOBALL.game.keysDown) {
-					currentPlayer.speedVector.angle += 45;
-				} else if(FOOBALL.keyCodes.RIGHT in FOOBALL.game.keysDown) {
-					currentPlayer.speedVector.angle -= 45;
-				}
-				angleCalced=true;
-			}
-			if (FOOBALL.keyCodes.LEFT in FOOBALL.game.keysDown) { // Player holding left
-				posXy[0] -= currentPlayer.speedVector.magnitude * modifier;
-				if(!angleCalced) {
-					currentPlayer.speedVector.angle = 180;
-				}
-				angleCalced=true;
-			}
-			if (FOOBALL.keyCodes.RIGHT in FOOBALL.game.keysDown) { // Player holding right
-				posXy[0] += currentPlayer.speedVector.magnitude * modifier;
-				if(!angleCalced) {
-					currentPlayer.speedVector.angle = 0;
-				}
-				angleCalced=true;
-			}
-			currentPlayer.posVector.setXy(posXy);
-			currentPlayer.speedVector.magnitude=1;
-		} else {
-			currentPlayer.speedVector.magnitude=0;
-		}
-	}
-
-	//update ball
-	if(FOOBALL.game.ball.speedVector.magnitude > 0) {
-		//unblit
-		FOOBALL.game.ball.clear(FOOBALL.mainview);
-		FOOBALL.game.ball.clear(FOOBALL.radarview);
-		var bposXy = FOOBALL.game.ball.posVector.getXy();
-		/*
-		var bxym= FOOBALL.mainview.transformPoint(bposXy);
-		FOOBALL.draw.drawDisc(FOOBALL.mainview.context, [bxym[0]-0.2, bxym[1]-0.2], 0.9, FOOBALL.bg.color);
-		var bxyr= FOOBALL.radarview.transformPoint(bposXy);
-		FOOBALL.draw.drawDisc(FOOBALL.radarview.context, [bxyr[0]-0.1, bxyr[1]-0.1], 0.7, FOOBALL.bg.color);
-		*/
-
-		var spv = FOOBALL.game.ball.speedVector;
-		//update
-		FOOBALL.game.ball.posVector.add( FOOBALL.physics2d.mul(spv, modifier) );
-		//account for friction and collisions with rocks
-		if(!FOOBALL.game.ball.posVector.inside([0,0],[1,1])) {
-			//TODO only if pointing away from midpoint
-			var angle = FOOBALL.physics2d.angle(bposXy,[0.5,0.5])
-				       - FOOBALL.game.ball.speedVector.angle;
-			if(angle > 90 || angle < -90) {
-				FOOBALL.game.ball.speedVector.bounce();
-			}
-
-		} else {
-			FOOBALL.game.ball.speedVector.mul(FOOBALL.behaviourTypes.ball.friction);
-		}
-
-	}
-
-	//TODO update AI players
-
-
-	//TODO collision detection
-	var dist= FOOBALL.physics2d.distance(currentPlayer.posVector.getXy(), FOOBALL.game.ball.posVector.getXy());
-	if(dist < 0.03) {
-		FOOBALL.console.log("HIT "+dist+" "+FOOBALL.game.ball.speedVector.angle);
-		FOOBALL.game.ball.speedVector.copy(currentPlayer.speedVector);
-	}
-
-};
-
 
 
